@@ -5,8 +5,23 @@ const db = require('../models');
 const {isLoggedIn} = require('./middleware');
 const path = require('path')
 
+const upload = multer({
+  storage:multer.diskStorage({
+    destination(req, file, cb){
+      cb(null,'uploads');
+    },
+    filename(req, file, cb){
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      cb(null, basename + new Date().valueOf() + ext);
+    }
+  }),//hard disk
+  limits:{fileSize:20*1024*1024},
+});
 
-router.post('/', isLoggedIn ,async (req ,res, next)=>{
+
+
+router.post('/', isLoggedIn, upload.none(), async (req ,res, next)=>{
   try {
     const hashtags = req.body.content.match(/#[^\s]+/g);
     const newPost = await db.Post.create({
@@ -22,6 +37,19 @@ router.post('/', isLoggedIn ,async (req ,res, next)=>{
       console.log(result);
       await newPost.addHashtags(result.map(r=>r[0]));
     }
+    if(req.body.image){
+      if(Array.isArray(req.body.image)){
+        const images = await Promise.all(req.body.image.map((image)=>{
+          return db.Image.create({src:image});
+        }));
+        await newPost.addImages(images);
+      }else{
+        const image = await db.Image.create({src:req.body.image});
+        await newPost.addImage(image);
+      }
+    }
+
+
     //const User = await newPost.getUser();
     //newPost.User = User;
     //res.json(newPost);
@@ -32,6 +60,8 @@ router.post('/', isLoggedIn ,async (req ,res, next)=>{
       include:[{
         model:db.User,
         attributes:['nickname']
+      },{
+        model:db.Image,
       }],
     })
     res.json(fullPost);
@@ -42,22 +72,8 @@ router.post('/', isLoggedIn ,async (req ,res, next)=>{
 });
 
 
-const upload = multer({
-  storage:multer.diskStorage({
-    destination(req, file, cb){
-      cb(null,'uploads');
-    },
-    filename(req, file, cb){
-      const ext = path.extname(file.originalname);
-      const basename = path.basename(file.originalname, ext);
-      cb(null, basename + new Date().valueOf() + ext);
-    }
-  }),//hard disk
-  limits:{fileSize:20*1024*1024},
-});
 
 router.post('/images', upload.array('image'), (req, res)=>{
-  console.log(req.files);
   res.json(req.files.map(v => v.filename));
 });
 

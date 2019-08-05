@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-
+const path = require('path')
 const db = require('./models');
 db.sequelize.sync();
 const morgan = require('morgan');
@@ -18,6 +18,7 @@ const postsAPIRouter = require('./routes/posts');
 const hashtagAPIRouter = require('./routes/hashtag');
 
 app.use(morgan('dev'));
+app.use('/',express.static('uploads'));
 app.use(cors({
   origin:true,
   credentials:true,

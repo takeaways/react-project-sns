@@ -8,6 +8,8 @@ router.get('/', async (req ,res)=>{
       include:[{
         model:db.User,
         attributes:['nickname','id']
+      },{
+        model:db.Image
       }],
       order:[['createdAt','DESC']]
     });

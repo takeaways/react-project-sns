@@ -24,7 +24,8 @@ import {
   LOAD_COMMENTS_FAILURE,
   UPLOAD_IMAGES_REQUEST,
   UPLOAD_IMAGES_FAILURE,
-  UPLOAD_IMAGES_SUCCESS
+  UPLOAD_IMAGES_SUCCESS,
+  REMOVE_IMAGE
 } from '../reducers/post'
 
 function* watchAddPost(){

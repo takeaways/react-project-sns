@@ -4,7 +4,7 @@ import Link from 'next/link'
 import PropTypes from 'prop-types';
 import {useSelector, useDispatch} from 'react-redux';
 import {ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST} from '../reducers/post';
-
+import PostImages from './PostImages';
 
 const PostCard = ({post}) => {
 
@@ -42,17 +42,16 @@ const PostCard = ({post}) => {
       }
     })
   },[me && me.id, commentText])
-  
+
 
   useEffect(()=>{
     setCommentText('');
   },[commentAdded === true])
 
-
   return (
     <div>
       <Card
-        cover={post.img && <img alt="example" src={post.img}/>}
+        cover={post.Images[0] && <PostImages images={post.Images}/>}
         actions={[
           <Icon type="retweet" key="retweet"/>,
           <Icon type="heart" key="heart"/>,
@@ -66,7 +65,11 @@ const PostCard = ({post}) => {
           title={post.User.nickname}
           description={<div>{post.content.split(/(#[^\s]+)/g).map(h=>{
             if(h.match(/#[^\s]+/g)) return (
-              <Link as={`/hashtag/${h.slice(1)}`} href={{pathname:'/hashtag', query:{tag:h.slice(1)}}} key={h}><a>{h}</a></Link>
+              <Link
+                as={`/hashtag/${h.slice(1)}`}
+                href={{pathname:'/hashtag', query:{tag:h.slice(1)}}}
+                key={h}><a>{h}</a>
+              </Link>
             )
             return h
           })}</div>}
