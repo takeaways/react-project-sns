@@ -42,7 +42,7 @@
     "react-slick": "^0.24.0",
     "redux": "^4.0.4",
     "redux-saga": "^1.0.5",
-    "sequelize": "^5.10.0"
+    "sequelize": "^5.15.1"
   },
   "devDependencies": {
     "eslint": "^6.0.1",
